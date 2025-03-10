@@ -197,3 +197,43 @@
 		cb(null, t);
 	}
 }());
+
+;(function() {
+
+// Detect environment
+const isDenoEnv = typeof Deno !== 'undefined';
+
+// Modify storage operations to use async/promises with Deno.Kv where appropriate
+if (isDenoEnv) {
+  var sT = setTimeout, RAD = sT.RAD;
+  RAD.put = async function(file, data, cb, opt) {
+    try {
+      await Deno.writeTextFile(opt.file+'/'+file, data);
+      cb(null, 1);
+    } catch(e) {
+      cb(e);
+    }
+  }
+  RAD.get = async function(file, cb, opt) {
+    try {
+      const data = await Deno.readTextFile(opt.file+'/'+file);
+      cb(null, data);
+    } catch(e) {
+      if (e instanceof Deno.errors.NotFound) {
+        cb();
+      } else {
+        cb(e);
+      }
+    }
+  }
+}
+
+try { 
+  if (isDenoEnv) {
+    globalThis.RAD = RAD;
+  } else if (typeof module !== 'undefined') { 
+    module.exports = RAD;
+  }
+} catch(e) {}
+
+}());

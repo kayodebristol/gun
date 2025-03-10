@@ -1,6 +1,14 @@
 ;(function(){
 
-require('./shim');
+// Detect environment
+const isDenoEnv = typeof Deno !== 'undefined';
+
+// Import shim
+if (isDenoEnv) {
+  import('./shim.js');
+} else {
+  require('./shim');
+}
 
 var noop = function(){}
 var parse = JSON.parseAsync || function(t,cb,r){ var u, d = +new Date; try{ cb(u, JSON.parse(t,r), json.sucks(+new Date - d)) }catch(e){ cb(e) } }
@@ -348,7 +356,12 @@ function Mesh(root){
 }
 	  var empty = {}, ok = true, u;
 
-	  try{ module.exports = Mesh }catch(e){}
+	  // Export module
+	  if (isDenoEnv) {
+		globalThis.Mesh = Mesh;
+	  } else {
+		try{ module.exports = Mesh }catch(e){}
+	  }
 
 	
 }());

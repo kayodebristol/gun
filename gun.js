@@ -1,5 +1,16 @@
 ;(function(){
 
+  // Detect environment
+  const isDenoEnv = typeof Deno !== 'undefined';
+  const isBrowserEnv = typeof window !== 'undefined';
+  const hasGlobal = typeof global !== 'undefined';
+  const globalThis = isBrowserEnv ? window : hasGlobal ? global : self;
+
+  // For Deno compatibility
+  if (isDenoEnv && !globalThis.process) {
+    globalThis.process = { env: {} };
+  }
+
   /* UNBUILD */
   function USE(arg, req){
     return req? require(arg) : arg.slice? USE[R(arg)] : function(mod, path){
@@ -1613,8 +1624,7 @@
 
 		var noop = function(){}
 		var parse = JSON.parseAsync || function(t,cb,r){ var u, d = +new Date; try{ cb(u, JSON.parse(t,r), json.sucks(+new Date - d)) }catch(e){ cb(e) } }
-		var json = JSON.stringifyAsync || function(v,cb,r,s){ var u, d = +new Date; try{ cb(u, JSON.stringify(v,r,s), json.sucks(+new Date - d)) }catch(e){ cb(e) } }
-		json.sucks = function(d){ if(d > 99){ console.log("Warning: JSON blocking CPU detected. Add `gun/lib/yson.js` to fix."); json.sucks = noop } }
+		var json = JSON.stringifyAsync || function(v,cb,r,s){ var u, d = +new Date; try{ cb(u, JSON.stringify(v,r,s)) }catch(e){ cb(e) } }
 
 		function Mesh(root){
 			var mesh = function(){};
