@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  deno-gun:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8765:8765"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - PORT=8765
+      - GUN_DB_FILE=data/gundb

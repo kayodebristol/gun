@@ -1,6 +1,12 @@
-node_modules
-radata
-stats.radata
 .git
+.github
+node_modules
+npm-debug.log
+Dockerfile
+.dockerignore
 .gitignore
+README.md
+LICENSE.md
 *.md
+gundb
+data/

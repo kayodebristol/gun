@@ -1,49 +1,37 @@
-name: ci
+name: Deno CI
 
 on:
-  - push
-  - pull_request
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
 
 jobs:
-
   test:
+    name: Test on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        node-version: [ 14.x ]
-        os: [ ubuntu-latest ]
-    runs-on: ${{ matrix.os }}
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        deno: [v1.x]
+
     steps:
+      - name: Setup repo
+        uses: actions/checkout@v3
 
-    # checkout the code
-    - name: Checkout
-      uses: actions/checkout@v2
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: ${{ matrix.deno }}
 
-    # verify the version in package.json matches the release tag
-    - name: Version
-      uses: tcurdt/action-verify-version-npm@master
+      - name: Verify formatting
+        run: deno fmt --check
 
-    # setup the node version
-    - name: Setup Node ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
+      - name: Run linter
+        run: deno lint
 
-    # cache node_modules if we can
-    - name: Cache
-      id: cache-modules
-      uses: actions/cache@v2
-      with:
-        path: node_modules
-        key: ${{ matrix.node-version }}-${{ runner.OS }}-build-${{ hashFiles('package.json') }}
-
-    # ottherweise run install
-    - name: Install
-      if: steps.cache-modules.outputs.cache-hit != 'true'
-      run: npm install
-
-    # run tests
-    - name: Test
-      run: npm test
+      - name: Run tests
+        run: deno test --allow-read --allow-write --allow-net
 
   # create github release
   release:

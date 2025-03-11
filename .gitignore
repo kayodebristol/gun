@@ -1,5 +1,30 @@
-node_modules
+# Deno
+.cache/
+.vscode/
+
+# Build outputs
+/public/
+/dist/
+/build/
+
+# Dependencies
+node_modules/
 npm-debug.log
+frontend/node_modules/
+
+# Local environment
+.env
+.env.local
+.env.development
+
+# Database files
+gundb
+data/
+
+# OS specific
+.DS_Store
+Thumbs.db
+
 yarn.lock
 *data.json
 *data*
@@ -9,7 +34,6 @@ yarn.lock
 *.new
 *.log
 v8.json
-*.DS_store
 isolate*.log
 .esm-cache
 .sessionStorage

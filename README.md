@@ -47,10 +47,15 @@ GUN is *super easy* to get started with:
 ```html
 <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
 <script>
-// import GUN from 'gun'; // in ESM
-// GUN = require('gun'); // in NodeJS
-// GUN = require('gun/gun'); // in React
-gun = GUN();
+// For Deno:
+// import { Gun } from "https://raw.githubusercontent.com/kayodebristol/deno-gun/main/mod.ts";
+// For ESM browsers:
+// import GUN from 'gun';
+// For NodeJS:
+// const GUN = require('gun');
+// For React:
+// const GUN = require('gun/gun');
+const gun = GUN();
 
 gun.get('mark').put({
   name: "Mark",
@@ -217,23 +222,27 @@ I am missing many others, apologies, will be adding them soon! This list is infi
 
 ## Testing
 
-You will need to `npm install -g mocha` first. Then in the gun root folder run `npm test`. Tests will trigger persistent writes to the DB, so subsequent runs of the test will fail. You must clear the DB before running the tests again. This can be done by running `rm -rf *data*` command in the project directory.
+For testing with Deno:
+
+```bash
+# Run tests
+deno test --allow-read --allow-write --allow-net
+```
+
+Tests will create persistent data in the default 'gundb' file. To clear the database between test runs, you can simply delete this file:
+
+```bash
+rm gundb
+```
 
 ## Shims
 
- > These are only needed for NodeJS & React Native, they shim the native Browser WebCrypto API.
+ > Unlike the NodeJS version of Gun, the Deno version doesn't require WebCrypto shims as Deno already provides the WebCrypto API natively.
 
-If you want to use [SEA](https://gun.eco/docs/SEA) for `User` auth and security, you will need to install:
+If you want to use [SEA](https://gun.eco/docs/SEA) for `User` auth and security, you can import it directly:
 
-`npm install @peculiar/webcrypto --save`
-
-Please see [our React Native docs](https://gun.eco/docs/React-Native) for installation instructions!
-
-Then you can require [SEA](https://gun.eco/docs/SEA) without an error:
-
-```javascript
-GUN = require('gun/gun');
-SEA = require('gun/sea');
+```typescript
+import { Gun, SEA } from "https://raw.githubusercontent.com/kayodebristol/deno-gun/main/mod.ts";
 ```
 
 ## Deploy
@@ -291,33 +300,26 @@ Then visit the URL in the output of the 'now --npm' step, in your browser.
 
 ### [Docker](https://www.docker.com/)
 
- > Warning: Docker image is community contributed and may be old with missing security updates, please check version numbers to compare.
-
-[![Docker Automated build](https://img.shields.io/docker/automated/gundb/gun.svg)](https://hub.docker.com/r/gundb/gun/) [![](https://images.microbadger.com/badges/image/gundb/gun.svg)](https://microbadger.com/images/gundb/gun "Get your own image badge on microbadger.com") [![Docker Pulls](https://img.shields.io/docker/pulls/gundb/gun.svg)](https://hub.docker.com/r/gundb/gun/) [![Docker Stars](https://img.shields.io/docker/stars/gundb/gun.svg)](https://hub.docker.com/r/gundb/gun/)
-
-Pull from the [Docker Hub](https://hub.docker.com/r/gundb/gun/) [![](https://images.microbadger.com/badges/commit/gundb/gun.svg)](https://microbadger.com/images/gundb/gun). Or:
+For the Deno version of Gun, use the included Dockerfile which is specifically configured for Deno:
 
 ```bash
-docker run -p 8765:8765 gundb/gun
+# Build the Docker image
+docker build -t deno-gun .
+
+# Run the container
+docker run -p 8765:8765 deno-gun
 ```
 
-Or build the [Docker](https://docs.docker.com/engine/installation/) image locally:
+Or use docker-compose:
 
 ```bash
-git clone https://github.com/amark/gun.git
-cd gun
-docker build -t myrepo/gundb:v1 .
-docker run -p 8765:8765 myrepo/gundb:v1
-```
-
-Or, if you prefer your Docker image with metadata labels (Linux/Mac only):
-
-```bash
-npm run docker
-docker run -p 8765:8765 username/gun:git
+docker-compose up
 ```
 
 Then visit [http://localhost:8765](http://localhost:8765) in your browser.
+
+> Note: The Docker setup for this Deno version is different from the original Gun.js Docker setup.
+It uses the official Deno image and proper permissions for Deno applications.
 
 ## License
 
@@ -328,3 +330,65 @@ Openly licensed under [Zlib / MIT / Apache 2.0](https://github.com/amark/gun/blo
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Famark%2Fgun.svg?size=large)](https://app.fossa.io/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Famark%2Fgun?ref=badge_large)
 
 [YouTube](https://www.youtube.com/channel/UCQAtpf-zi9Pp4__2nToOM8g) . [Twitter](https://twitter.com/marknadal)
+
+# Deno Gun
+
+A Deno-compatible version of [Gun.js](https://gun.eco/), a realtime, distributed, offline-first graph database.
+
+This is an adaptation of the original GUN database by Mark Nadal, modified for compatibility with Deno by Kayode Bristol.
+
+**Version: 0.2020.1235** (Early Deno adaptation based on core GUN)
+
+## Features
+
+- Full Deno compatibility
+- Uses Deno.Kv as the default storage engine
+- ES Module support
+- Maintains API compatibility with Gun.js
+
+## Usage
+
+```typescript
+import { Gun } from "https://raw.githubusercontent.com/kayodebristol/deno-gun/main/mod.ts";
+
+// Create a new Gun instance
+const gun = Gun();
+
+// Use Gun as normal
+gun.get('user').put({name: 'Alice'});
+```
+
+## Installation
+
+You can use this library directly from GitHub:
+
+```typescript
+import { Gun } from "https://raw.githubusercontent.com/kayodebristol/deno-gun/main/mod.ts";
+```
+
+## Storage
+
+By default, this version of Gun uses Deno.Kv for persistent storage. The data is stored in a file named 'gundb' by default.
+
+To specify a different storage location:
+
+```typescript
+const gun = Gun({
+  file: 'my-custom-db-name'
+});
+```
+
+## License
+
+This adaptation is licensed under the same license as the original GUN database.
+
+Apache License 2.0 and MIT and (CC BY-SA 4.0 or [zlib](https://github.com/amark/gun/blob/master/zlib.js))
+
+GUN is primarily licensed under the Apache v2.0 license but parts of the code are licensed under compatible licenses:
+
+- The core GUN database (gun.js and gun.min.js) is dual-licensed under both "MIT" and "(CC BY-SA 4.0 or Zlib)" for maximum licensing compatibility.
+- All other components of GUN core are licensed under "Apache License 2.0"
+
+Original GUN created and maintained by Mark Nadal. Deno adaptation by Kayode Bristol.
+
+Learn more about GUN at [https://gun.eco](https://gun.eco).

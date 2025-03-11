@@ -1,1 +1,1 @@
-web: node --inspect examples/http.js
+web: deno run --allow-net --allow-read --allow-write --allow-env mod.ts

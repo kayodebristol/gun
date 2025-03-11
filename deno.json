@@ -1,0 +1,34 @@
+{
+  "name": "@kayodebristol/deno-gun",
+  "version": "0.2020.1235",
+  "description": "A Deno-compatible version of the GUN database ecosystem",
+  "main": "./mod.ts",
+  "author": "Deno adaptation by Kayode Bristol, Original GUN by Mark Nadal",
+  "license": "Apache-2.0 AND MIT AND (CC-BY-SA-4.0 OR Zlib)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kayodebristol/deno-gun"
+  },
+  "compilerOptions": {
+    "allowJs": true,
+    "strict": false,
+    "noImplicitAny": false
+  },
+  "tasks": {
+    "start": "deno run --allow-read --allow-write --allow-net --allow-env mod.ts",
+    "start:ui": "deno run --allow-read --allow-write --allow-net --allow-env mod.ts --frontend",
+    "dev:ui": "deno run --allow-read --allow-write --allow-net --allow-env --watch mod.ts --frontend",
+    "test": "deno test --allow-read --allow-write --allow-net --unstable",
+    "compile": "deno compile --allow-read --allow-write --allow-net --allow-env --output deno-gun mod.ts",
+    "compile:win": "deno compile --allow-read --allow-write --allow-net --allow-env --target x86_64-pc-windows-msvc --output deno-gun.exe mod.ts",
+    "compile:mac": "deno compile --allow-read --allow-write --allow-net --allow-env --target x86_64-apple-darwin --output deno-gun-mac mod.ts",
+    "compile:linux": "deno compile --allow-read --allow-write --allow-net --allow-env --target x86_64-unknown-linux-gnu --output deno-gun-linux mod.ts",
+    "compile:arm": "deno compile --allow-read --allow-write --allow-net --allow-env --target aarch64-apple-darwin --output deno-gun-arm mod.ts",
+    "compile:all": "deno task compile:win && deno task compile:mac && deno task compile:linux && deno task compile:arm",
+    "build:ui": "cd frontend && npm run build",
+    "dev:svelte": "cd frontend && npm run dev"
+  },
+  "imports": {
+    "std/": "https://deno.land/std/"
+  }
+}
