@@ -3,7 +3,7 @@
     "allowJs": true,
     "strict": true,
     "lib": ["dom", "dom.iterable", "dom.asynciterable", "deno.ns"],
-    "jsx": "preserve",
+    "jsx": "precompile",
     "types": ["svelte", "vite/client"]
   },
   "imports": {
