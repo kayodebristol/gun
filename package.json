@@ -1,6 +1,8 @@
 {
   "name": "deno-gun",
-  "version": "0.2020.1239",
+  "type": "commonjs",
+  "version": "0.2020.1235",
+  "private": true,
   "description": "A realtime, decentralized, offline-first, graph data synchronization engine.",
   "types": "index.d.ts",
   "main": "index.js",
