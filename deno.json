@@ -2,12 +2,11 @@
   "name": "@kayodebristol/deno-gun",
   "version": "0.2020.1235",
   "description": "A Deno-compatible version of the GUN database ecosystem",
-  "main": "./mod.ts",
+  "main": "./src/core/mod.ts",
   "exports": {
-    ".": "./mod.ts",
-    "./lib/*": "./lib/*",
-    "./sea": "./sea-esm.js",
-    "./gun": "./gun-esm.js"
+    ".": "./src/core/mod.ts",
+    "./gun": "./src/core/gun-esm.js",
+    "./lib/*": "./src/lib/*"
   },
   "author": "Deno adaptation by Kayode Bristol, Original GUN by Mark Nadal",
   "license": "Apache-2.0 AND MIT AND (CC-BY-SA-4.0 OR Zlib)",
@@ -16,58 +15,60 @@
     "url": "https://github.com/kayodebristol/deno-gun"
   },
   "compilerOptions": {
+    "lib": ["dom", "dom.iterable", "dom.asynciterable", "deno.ns"],
     "strict": true,
-    "lib": ["deno.window", "dom"],
-    "types": ["./deno.d.ts"]
+    "allowJs": true,
+    "checkJs": false,
+    "types": ["./src/types/deno.d.ts"]
   },
   "tasks": {
-    "dev": "deno run --allow-net --allow-read --allow-write --allow-env mod.ts",
-    "dev:ui": "deno run -A --unstable --watch=frontend/src/ frontend/src/main.ts",
-    "test": "deno test --allow-net --allow-read --allow-write --allow-env",
-    "check": "deno check **/*.ts",
-    "start": "deno run --allow-read --allow-write --allow-net --allow-env mod.ts",
-    "start:ui": "deno run --allow-read --allow-write --allow-net --allow-env mod.ts --frontend",
-    "compile": "deno compile --allow-read --allow-write --allow-net --allow-env --output deno-gun mod.ts",
-    "compile:win": "deno compile --allow-read --allow-write --allow-net --allow-env --target x86_64-pc-windows-msvc --output deno-gun.exe mod.ts",
-    "compile:mac": "deno compile --allow-read --allow-write --allow-net --allow-env --target x86_64-apple-darwin --output deno-gun-mac mod.ts",
-    "compile:linux": "deno compile --allow-read --allow-write --allow-net --allow-env --target x86_64-unknown-linux-gnu --output deno-gun-linux mod.ts",
-    "compile:arm": "deno compile --allow-read --allow-write --allow-net --allow-env --target aarch64-apple-darwin --output deno-gun-arm mod.ts",
-    "compile:all": "deno task compile:win && deno task compile:mac && deno task compile:linux && deno task compile:arm",
-    "lint": "deno lint",
-    "fmt": "deno fmt",
-    "build:ui": "deno run -A --unstable frontend/build.ts",
-    "preview:ui": "deno run -A --unstable frontend/preview.ts"
+    "dev": "deno run --watch main.ts",
+    "dev:ui": "deno run --allow-net --allow-read --allow-write --allow-env src/frontend/dev.ts",
+    "test": "deno test --no-check --allow-net --allow-read --allow-write --allow-env \"test/**/*.test.ts\" \"test/**/*.test.mts\"",
+    "test:core": "deno test --no-check --allow-net --allow-read --allow-write --allow-env \"test/core/**/*.test.ts\" \"test/core/**/*.test.mts\"",
+    "test:frontend": "deno test --no-check --allow-net --allow-read --allow-write --allow-env \"test/frontend/**/*.test.ts\" \"test/frontend/**/*.test.mts\"",
+    "test:watch": "deno test --watch --no-check --allow-net --allow-read --allow-write --allow-env \"test/**/*.test.ts\" \"test/**/*.test.mts\"",
+    "test:coverage": "deno test --coverage=coverage --no-check --allow-net --allow-read --allow-write --allow-env \"test/**/*.test.ts\" \"test/**/*.test.mts\" && deno coverage coverage",
+    "check": "deno check src/**/*.ts",
+    "start": "deno run --allow-read --allow-write --allow-net --allow-env src/core/mod.ts",
+    "start:ui": "deno run --allow-read --allow-write --allow-net --allow-env src/core/mod.ts --frontend",
+    "build": "deno run --allow-net --allow-read --allow-write --allow-env src/frontend/build.ts",
+    "preview": "deno run --allow-net --allow-read --allow-write --allow-env src/frontend/preview.ts"
   },
   "imports": {
     "$std/": "https://deno.land/std@0.220.1/",
-    "gun": "./gun-esm.js",
-    "gun/": "./lib/",
-    "sea": "./sea-esm.js",
-    "gun-lib": "./lib/index.js",
-    "@sveltejs/kit": "npm:@sveltejs/kit@2.5.4",
-    "svelte": "npm:svelte@5.0.0-next.1",
-    "svelte/internal": "npm:svelte@5.0.0-next.1/internal",
-    "svelte/store": "npm:svelte@5.0.0-next.1/store",
-    "svelte/transition": "npm:svelte@5.0.0-next.1/transition",
-    "svelte/animate": "npm:svelte@5.0.0-next.1/animate",
-    "svelte/easing": "npm:svelte@5.0.0-next.1/easing",
-    "svelte/motion": "npm:svelte@5.0.0-next.1/motion",
-    "d3": "npm:d3@7.8.5",
-    "d3/": "npm:@types/d3@7.4.3/"
+    "npm:svelte@5.0.0-next.1/": "https://cdn.jsdelivr.net/npm/svelte@5.0.0-next.1/+esm/",
+    "gun": "./src/core/gun-esm.js",
+    "gun-types": "./types/gun-esm.d.ts",
+    "gun/": "./src/lib/",
+    "sea": "./src/core/sea-esm.js",
+    "gun-lib": "./src/lib/index.js",
+    "svelte": "https://cdn.jsdelivr.net/npm/svelte@5.0.0-next.1/+esm",
+    "svelte/internal": "https://cdn.jsdelivr.net/npm/svelte@5.0.0-next.1/internal/+esm",
+    "svelte/store": "https://cdn.jsdelivr.net/npm/svelte@5.0.0-next.1/store/+esm",
+    "svelte/transition": "https://cdn.jsdelivr.net/npm/svelte@5.0.0-next.1/transition/+esm",
+    "svelte/animate": "https://cdn.jsdelivr.net/npm/svelte@5.0.0-next.1/animate/+esm",
+    "svelte/easing": "https://cdn.jsdelivr.net/npm/svelte@5.0.0-next.1/easing/+esm",
+    "svelte/motion": "https://cdn.jsdelivr.net/npm/svelte@5.0.0-next.1/motion/+esm",
+    "svelte-spa-router": "https://cdn.jsdelivr.net/npm/svelte-spa-router@4.0.0/+esm",
+    "@testing-library/svelte": "npm:@testing-library/svelte@4.1.0",
+    "@testing-library/jest-dom": "npm:@testing-library/jest-dom@6.4.2"
   },
   "fmt": {
     "include": ["src/", "test/"],
-    "exclude": ["node_modules/", "dist/", "public/"],
+    "exclude": ["src/core/gun-esm.js"],
     "indentWidth": 2,
     "lineWidth": 100,
     "semiColons": true,
-    "singleQuote": false
+    "singleQuote": true
   },
   "lint": {
     "include": ["src/", "test/"],
-    "exclude": ["node_modules/", "dist/", "public/"],
-    "rules": {
-      "tags": ["recommended"]
-    }
+    "exclude": ["src/core/gun-esm.js"]
+  },
+  "test": {
+    "include": ["test/"],
+    "exclude": ["src/"],
+    "files": ["test/**/*.test.ts", "test/**/*.test.mts"]
   }
 }
